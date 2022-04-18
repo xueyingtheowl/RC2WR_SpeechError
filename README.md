@@ -11,4 +11,6 @@ multilingual background, self-evaluations of entire focus, self-evaluations of p
 2)the correlations (Logistic Regression) of each type of speech error with each type of tongue twister reading task. With covariances includes order of the experiment, age, gender, multilingual background, 
 self-evaluations of entire focus, self-evaluations of phological task focus
 
-Both statsitical models are run with (mixed effect)/without(fixed effect) the random effect of the participant. 
+Both statsitical models are run with (mixed effect)/without(fixed effect) the random effect of the participant.
+
+If you are intersted in the annotated speech error data, please reach out me at xueying.wang@rochester.edu
