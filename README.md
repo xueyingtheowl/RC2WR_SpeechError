@@ -2,15 +2,6 @@
 Statistical Modeling for my MA thesis research--
 Reading Comprehension Constrains Word Reading: A Tongue Twister Study by Moderating Attentional Control
 
-Timeline of the research:
-
-01-05.2021: Initialize the idea, construct theory, design experiment, decide statistical plans
-06.2021: IRB application, participants recruitment, literature review written
-07-09.2021: data collection, 1st round data annotation, experiment procedure part written
-09-11.2021: 2nd and 3rd round data annotation, data preprocessing and analysis, complete draft written
-11-12.2021: thesis for defense submitted to committe members and defensed
-02-2022: theis edited based on committe memebers' suggestions and submitted to the gratuate school and published
-
 SpeechError_Cleaning.Rmd is for preprocessing speech error data for later model usages. 
 
 SpeechError_Model.Rmd  contains:
@@ -24,3 +15,12 @@ self-evaluations of entire focus, self-evaluations of phological task focus
 Both statsitical models are run with (mixed effect)/without(fixed effect) the random effect of the participant.
 
 If you are intersted in the annotated speech error data, please reach out me at xueying.wang@rochester.edu
+
+Timeline of the research:
+
+01-05.2021: Initialize the idea, construct theory, design experiment, decide statistical plans
+06.2021: IRB application, participants recruitment, literature review written
+07-09.2021: data collection, 1st round data annotation, experiment procedure part written
+09-11.2021: 2nd and 3rd round data annotation, data preprocessing and analysis, complete draft written
+11-12.2021: thesis for defense submitted to committe members and defensed
+02-2022: theis edited based on committe memebers' suggestions and submitted to the gratuate school and published
