@@ -1,8 +1,9 @@
 # RC2WR_SpeechError_Stat
 Statistical Modeling for my MA thesis research--
-READING COMPREHENSION CONSTRAINS WORD READING: A TONGUE TWISTER STUDY BY MODERATING ATTENTIONAL CONTROL
+Reading Comprehension Constrains Word Reading: A Tongue Twister Study by Moderating Attentional Control
 
 Timeline of the research:
+
 01-05.2021: Initialize the idea, construct theory, design experiment, decide statistical plans
 06.2021: IRB application, participants recruitment, literature review written
 07-09.2021: data collection, 1st round data annotation, experiment procedure part written
