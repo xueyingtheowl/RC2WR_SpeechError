@@ -1,0 +1,331 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+getwd()
+```
+
+
+```{r}
+#setting working directory and loading packages
+setwd("/Users/wubabear/Desktop")
+library(lme4)
+library(car)
+library(dplyr)
+```
+
+```{r}
+#reading in long data from cleaned CSV file
+analysis_dataset_long = read.table("/Users/wubabear/Desktop/tpa_data_long_cleaned_xw.csv",
+                                   sep = ",",
+                                   header = TRUE,
+                                   stringsAsFactors = FALSE)
+```
+
+```{r}
+#making R treat categorical variables the desired way
+analysis_dataset_long$order = as.factor(analysis_dataset_long$order)
+analysis_dataset_long$subject_name = as.factor(analysis_dataset_long$subject_name)
+analysis_dataset_long$Number = as.factor(analysis_dataset_long$Number)
+analysis_dataset_long$Experiment = as.factor(analysis_dataset_long$Experiment)
+```
+
+```{r}
+#releveling so that "Recall" is the reference level for regression analysis
+analysis_dataset_long$Type = factor(analysis_dataset_long$Type, levels = c("Recall", "Phonology", "Picture"))
+```
+
+```{r}
+#######################################################################################
+###########        Poisson Regression, for looking at total errors          ###########
+#######################################################################################
+
+#modeling without repeated measures, multiplying by 2 to eliminate issue with ".5" values 
+# + ent_focus + phon_focus + lang_expose + bilingual + age + gender
+#fitting model for just Experiment 2, adjusting for Order
+mod.total2 = glm(2*errors.total.amount ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long[which(analysis_dataset_long$Experiment == 2),], 
+                 family = poisson)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+#fitting model for both Experiments together, adjusting for Order
+# + ent_focus + phon_focus + lang_expose + bilingual + age + gender
+# Anova(mod.total, type = 3, test.statistic = "Wald")
+mod.total = glm(2*errors.total.amount ~ Type + order + lang_expose + bilingual, 
+                data = analysis_dataset_long,
+                family = poisson)
+summary(mod.total)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+
+```{r}
+boxplot(2*errors.total.amount ~ Type, data = analysis_dataset_long[which(analysis_dataset_long$errors.total.amount > 0),], 
+        col = c("brown", "orange", "gold"))
+```
+```{r}
+#modeling with random effect for participant
+# [which(analysis_dataset_long$Experiment == 1),] 
+# + ent_focus + phon_focus + age
+mod.total2 = glmer(2*errors.total.amount ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = poisson,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+
+# Fixed effects:
+           # Estimate Std. Error z value Pr(>|z|)    
+#(Intercept)  0.91961    0.14349   6.409 1.47e-10 ***
+#TypePicture -0.42302    0.09319  -4.539 5.64e-06 ***
+#order2       0.01124    0.19322   0.058    0.954  
+
+#  Inpterpret for P value.. When it is below 0.05 then it is significant. 
+
+#(Intercept) TypePicture      order2 
+#  2.5083178   0.6550654   1.0113050 
+
+# The picture type has about 35% less chances than Recall task to make errors.
+# For odds interpretation, 35% less of odds than recall
+
+
+            
+```
+```{r}
+#reading in long data from cleaned CSV file
+analysis_dataset_long = read.table("/Users/wubabear/Desktop/tpa_data_long_cleaned_xw.csv",
+                                   sep = ",",
+                                   header = TRUE,
+                                   stringsAsFactors = FALSE)
+```
+
+```{r}
+sapply(split(analysis_dataset_long$errors.total.amount,analysis_dataset_long$Type),mean(na.rm=TRUE))
+```
+
+
+```{r}
+head(analysis_dataset_long)
+```
+
+
+##################################################################################################
+###########        Logistic Regression, for looking at individual error types          ###########
+##################################################################################################
+
+################################## without random effect #########################################
+
+```{r}
+# errors.N.of..long.stop for Entire Experiment
+mod.total = glm((errors.N.of..long.stop > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of..long.stop > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+```{r}
+head(super_long$errors)
+```
+
+
+```{r}
+# entire experiment errors.N.of.short.stop..and.quickly..reread
+mod.total = glm((errors.N.of.short.stop..and.quickly..reread > 0) ~ Type, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.short.stop..and.quickly..reread > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{r}
+# Entire Experiment short stop and quickly reread greater than 2 words
+mod.total = glm((errors.N.of.short.stop.and.quickly.reread....2.words > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.short.stop.and.quickly.reread....2.words > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{r}
+# entire experiment hesitation
+mod.total = glm((errors.N.of.hesi > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.hesi > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{r}
+# entire experiment misread
+mod.total = glm((errors.N.of.misread > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.misread > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{r}
+# entire experiment misread and quickly reread
+mod.total = glm((errors.N.of.misread..and.quickly..reread > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.misread..and.quickly..reread > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+
+```{r}
+# entire experiment q=misread and stop
+mod.total = glm((errors.N.of.misread..and.stop > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.misread..and.stop > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{r}
+# entire experiments errors of add
+mod.total = glm((errors.N.of.add > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.add > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{r}
+# entire experiment of omission
+mod.total = glm((errors.N.of.omi > 0) ~ Type + order + lang_expose + bilingual, 
+                 data = analysis_dataset_long, 
+                 family = binomial)
+summary(mod.total)
+
+table(analysis_dataset_long$errors.N.of.omi > 0, 
+      analysis_dataset_long$Type)
+exp(summary(mod.total)$coefficients[,1])
+```
+
+```{R}
+################################### with random effect ################################
+
+# errors.N.of.short.stop
+mod.total2 = glmer((errors.N.of.short.stop > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+
+```{r}
+# errors.N.of..long.stop
+mod.total2 = glmer((errors.N.of..long.stop > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.short.stop..and.quickly..reread
+mod.total2 = glmer((errors.N.of.short.stop..and.quickly..reread > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.short.stop.and.quickly.reread....2.words
+mod.total2 = glmer((errors.N.of.short.stop.and.quickly.reread....2.words > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.hesi
+mod.total2 = glmer((errors.N.of.hesi > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.misread
+mod.total2 = glmer((errors.N.of.misread > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.misread..and.quickly..reread
+mod.total2 = glmer((errors.N.of.misread..and.quickly..reread > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.misread..and.stop
+mod.total2 = glmer((errors.N.of.misread..and.stop > 0) ~ Type + order + (1|subject_name)+ lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+# errors.N.of.add
+mod.total2 = glmer((errors.N.of.add > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+```{r}
+head(analysis_dataset_long$Type)
+```
+
+```{r}
+# errors.N.of.omi
+mod.total2 = glmer((errors.N.of.omi > 0) ~ Type + order + (1|subject_name) + lang_expose + bilingual, 
+                   data = analysis_dataset_long, 
+                   family = binomial,
+                   nAGQ = 20)
+summary(mod.total2)
+exp(summary(mod.total2)$coefficients[,1])
+```
+
