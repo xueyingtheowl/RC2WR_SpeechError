@@ -1,5 +1,14 @@
 # RC2WR_SpeechError_Stat
-Statistical Modeling for the MA linguistic thesis--READING COMPREHENSION CONSTRAINS WORD READING: A TONGUE TWISTER STUDY BY MODERATING ATTENTIONAL CONTROL
+Statistical Modeling for my MA thesis research--
+READING COMPREHENSION CONSTRAINS WORD READING: A TONGUE TWISTER STUDY BY MODERATING ATTENTIONAL CONTROL
+
+Timeline of the research:
+01-05.2021: Initialize the idea, construct theory, design experiment, decide statistical plans
+06.2021: IRB application, participants recruitment, literature review written
+07-09.2021: data collection, 1st round data annotation, experiment procedure part written
+09-11.2021: 2nd and 3rd round data annotation, data preprocessing and analysis, complete draft written
+11-12.2021: thesis for defense submitted to committe members and defensed
+02-2022: theis edited based on committe memebers' suggestions and submitted to the gratuate school and published
 
 SpeechError_Cleaning.Rmd is for preprocessing speech error data for later model usages. 
 
